@@ -1,0 +1,86 @@
+[
+  {
+    "model": "recipes.category",
+    "pk": 1,
+    "fields": {
+      "name": "Breakfast"
+    }
+  },
+  {
+    "model": "recipes.category",
+    "pk": 2,
+    "fields": {
+      "name": "Lunch"
+    }
+  },
+  {
+    "model": "recipes.category",
+    "pk": 3,
+    "fields": {
+      "name": "Dinner"
+    }
+  },
+  {
+    "model": "recipes.category",
+    "pk": 4,
+    "fields": {
+      "name": "Appetizers"
+    }
+  },
+  {
+    "model": "recipes.category",
+    "pk": 5,
+    "fields": {
+      "name": "Desserts"
+    }
+  },
+  {
+    "model": "recipes.category",
+    "pk": 6,
+    "fields": {
+      "name": "Vegetarian"
+    }
+  },
+  {
+    "model": "recipes.category",
+    "pk": 7,
+    "fields": {
+      "name": "Vegan"
+    }
+  },
+  {
+    "model": "recipes.category",
+    "pk": 8,
+    "fields": {
+      "name": "Gluten-Free"
+    }
+  },
+  {
+    "model": "recipes.category",
+    "pk": 9,
+    "fields": {
+      "name": "Quick & Easy"
+    }
+  },
+  {
+    "model": "recipes.category",
+    "pk": 10,
+    "fields": {
+      "name": "Soups"
+    }
+  },
+  {
+    "model": "recipes.category",
+    "pk": 11,
+    "fields": {
+      "name": "Salads"
+    }
+  },
+  {
+    "model": "recipes.category",
+    "pk": 12,
+    "fields": {
+      "name": "Baking"
+    }
+  }
+]

@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Saved Recipes{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1>My Saved Recipes</h1>
+        </div>
+    </div>
+    
+    <div class="row">
+        {% if saved_recipes %}
+            {% for saved in saved_recipes %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 recipe-card">
+                    {% if saved.recipe.image %}
+                    <img src="{{ saved.recipe.image.url }}" class="card-img-top" alt="{{ saved.recipe.title }}" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                    <img src="https://via.placeholder.com/300x200?text=No+Image" class="card-img-top" alt="No Image">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ saved.recipe.title }}</h5>
+                        <div class="mb-2">
+                            <div class="star-rating">
+                                {% for i in "12345" %}
+                                {% if forloop.counter <= saved.recipe.average_rating %}
+                                <i class="fas fa-star"></i>
+                                {% elif forloop.counter <= saved.recipe.average_rating|add:0.5 %}
+                                <i class="fas fa-star-half-alt"></i>
+                                {% else %}
+                                <i class="far fa-star"></i>
+                                {% endif %}
+                                {% endfor %}
+                                <small class="text-muted ms-1">({{ saved.recipe.reviews.count }} reviews)</small>
+                            </div>
+                        </div>
+                        <p class="card-text">{{ saved.recipe.description|truncatechars:100 }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">By {{ saved.recipe.author.username }}</small>
+                            <div>
+                                <a href="{% url 'recipe-detail' saved.recipe.pk %}" class="btn btn-sm btn-primary">View</a>
+                                <form action="{% url 'save-recipe' saved.recipe.pk %}" method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Unsave</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12 text-center">
+                <div class="alert alert-info">
+                    <p>You haven't saved any recipes yet.</p>
+                    <a href="{% url 'recipe-list' %}" class="btn btn-primary mt-2">Browse Recipes</a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

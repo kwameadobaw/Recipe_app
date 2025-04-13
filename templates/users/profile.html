@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h2 class="text-center">My Profile</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-4 text-center">
+                            <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                            <h5>{{ user.username }}</h5>
+                            <p class="text-muted">{{ user.email }}</p>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="card text-center">
+                                        <div class="card-body">
+                                            <h3>{{ user.recipes.count }}</h3>
+                                            <p class="text-muted mb-0">Recipes</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card text-center">
+                                        <div class="card-body">
+                                            <h3>{{ user.saved_recipes.count }}</h3>
+                                            <p class="text-muted mb-0">Saved</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Bio</h5>
+                                    <p>{{ user.profile.bio|default:"No bio provided yet." }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="{{ form.profile_picture.id_for_label }}" class="form-label">Profile Picture</label>
+                            {{ form.profile_picture.errors }}
+                            <input type="file" name="{{ form.profile_picture.name }}" id="{{ form.profile_picture.id_for_label }}" class="form-control {% if form.profile_picture.errors %}is-invalid{% endif %}" accept="image/*">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.bio.id_for_label }}" class="form-label">Bio</label>
+                            {{ form.bio.errors }}
+                            <textarea name="{{ form.bio.name }}" id="{{ form.bio.id_for_label }}" class="form-control {% if form.bio.errors %}is-invalid{% endif %}" rows="3">{{ form.bio.value|default:'' }}</textarea>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Update Profile</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,258 @@
+{% extends 'base.html' %}
+
+{% block title %}Browse Recipes - Recipe Manager{% endblock %}
+
+{% block content %}
+<!-- Header Section -->
+<div class="bg-light py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="fw-bold mb-4">Browse Recipes</h1>
+                <form method="get" action="{% url 'recipe-list' %}" class="d-flex justify-content-center">
+                    <div class="input-group input-group-lg" style="max-width: 600px;">
+                        <input type="text" name="search" class="form-control" placeholder="Search recipes..." value="{{ request.GET.search|default:'' }}">
+                        <button class="btn btn-warning" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters and Recipes -->
+<div class="container py-5">
+    <div class="row">
+        <!-- Filters Sidebar -->
+        <div class="col-lg-3 mb-4 mb-lg-0">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold">Filters</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get" action="{% url 'recipe-list' %}">
+                        {% if request.GET.search %}
+                        <input type="hidden" name="search" value="{{ request.GET.search }}">
+                        {% endif %}
+                        
+                        <div class="mb-4">
+                            <h6 class="fw-bold mb-3">Categories</h6>
+                            {% for category in categories %}
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="category" value="{{ category.name }}" id="category-{{ category.id }}" 
+                                       {% if category.name in selected_categories %}checked{% endif %}>
+                                <label class="form-check-label" for="category-{{ category.id }}">
+                                    {{ category.name }}
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h6 class="fw-bold mb-3">Cooking Time</h6>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="time" value="15" id="time-15" 
+                                       {% if request.GET.time == '15' %}checked{% endif %}>
+                                <label class="form-check-label" for="time-15">
+                                    Under 15 minutes
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="time" value="30" id="time-30"
+                                       {% if request.GET.time == '30' %}checked{% endif %}>
+                                <label class="form-check-label" for="time-30">
+                                    Under 30 minutes
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="time" value="60" id="time-60"
+                                       {% if request.GET.time == '60' %}checked{% endif %}>
+                                <label class="form-check-label" for="time-60">
+                                    Under 1 hour
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="time" value="any" id="time-any"
+                                       {% if not request.GET.time or request.GET.time == 'any' %}checked{% endif %}>
+                                <label class="form-check-label" for="time-any">
+                                    Any time
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h6 class="fw-bold mb-3">Rating</h6>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="rating" value="4" id="rating-4"
+                                       {% if request.GET.rating == '4' %}checked{% endif %}>
+                                <label class="form-check-label" for="rating-4">
+                                    <div class="star-rating text-warning">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="far fa-star"></i>
+                                    </div>
+                                    & up
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="rating" value="3" id="rating-3"
+                                       {% if request.GET.rating == '3' %}checked{% endif %}>
+                                <label class="form-check-label" for="rating-3">
+                                    <div class="star-rating text-warning">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="far fa-star"></i>
+                                        <i class="far fa-star"></i>
+                                    </div>
+                                    & up
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="rating" value="any" id="rating-any"
+                                       {% if not request.GET.rating or request.GET.rating == 'any' %}checked{% endif %}>
+                                <label class="form-check-label" for="rating-any">
+                                    Any rating
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-warning w-100">Apply Filters</button>
+                        <a href="{% url 'recipe-list' %}" class="btn btn-outline-secondary w-100 mt-2">Clear Filters</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recipe List -->
+        <div class="col-lg-9">
+            {% if recipes %}
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <p class="mb-0">Showing {{ recipes.count }} recipes</p>
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        Sort by: {{ sort_by|default:"Newest" }}
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="sortDropdown">
+                        <li><a class="dropdown-item" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}sort=newest">Newest</a></li>
+                        <li><a class="dropdown-item" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}sort=popular">Most Popular</a></li>
+                        <li><a class="dropdown-item" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}sort=rating">Highest Rated</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="row">
+                {% for recipe in recipes %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 recipe-card shadow-sm hover-zoom">
+                        {% if recipe.image %}
+                        <div class="position-relative">
+                            <img src="{{ recipe.image.url }}" class="card-img-top" alt="{{ recipe.title }}" style="height: 220px; object-fit: cover;">
+                            <div class="position-absolute top-0 end-0 m-2">
+                                <span class="badge bg-warning text-dark">
+                                    <i class="fas fa-star me-1"></i>{{ recipe.average_rating|floatformat:1 }}
+                                </span>
+                            </div>
+                        </div>
+                        {% else %}
+                        <img src="https://via.placeholder.com/300x200?text=No+Image" class="card-img-top" alt="No Image" style="height: 220px; object-fit: cover;">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold">{{ recipe.title }}</h5>
+                            <div class="mb-2">
+                                <div class="star-rating text-warning">
+                                    {% for i in "12345" %}
+                                    {% if forloop.counter <= recipe.average_rating %}
+                                    <i class="fas fa-star"></i>
+                                    {% elif forloop.counter <= recipe.average_rating|add:0.5 %}
+                                    <i class="fas fa-star-half-alt"></i>
+                                    {% else %}
+                                    <i class="far fa-star"></i>
+                                    {% endif %}
+                                    {% endfor %}
+                                    <small class="text-muted ms-1">({{ recipe.reviews.count }})</small>
+                                </div>
+                            </div>
+                            <p class="card-text">{{ recipe.description|truncatechars:100 }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">By <span class="fw-bold text-warning">{{ recipe.author.username }}</span></small>
+                                <a href="{% url 'recipe-detail' recipe.pk %}" class="btn btn-sm btn-outline-warning">View Recipe</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}" aria-label="First">
+                            <span aria-hidden="true">&laquo;&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <li class="page-item active"><a class="page-link bg-warning border-warning" href="#">{{ num }}</a></li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item"><a class="page-link" href="?page={{ num }}{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}">{{ num }}</a></li>
+                    {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}" aria-label="Last">
+                            <span aria-hidden="true">&raquo;&raquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+            
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <h3>No recipes found</h3>
+                <p class="text-muted">Try adjusting your search or filter criteria</p>
+                <a href="{% url 'recipe-list' %}" class="btn btn-warning mt-3">Clear Filters</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-zoom {
+        transition: transform 0.3s ease;
+    }
+    .hover-zoom:hover {
+        transform: translateY(-5px);
+    }
+    .page-link {
+        color: #212529;
+    }
+    .page-link:hover {
+        color: #212529;
+    }
+</style>
+{% endblock %}

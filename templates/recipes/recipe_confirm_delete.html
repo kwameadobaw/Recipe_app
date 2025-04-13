@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Recipe{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h2 class="text-center">Delete Recipe</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-center">Are you sure you want to delete the recipe "{{ object.title }}"?</p>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                            <a href="{% url 'recipe-detail' object.pk %}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if form.instance.pk %}Edit Recipe{% else %}Add New Recipe{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h2 class="text-center">{% if form.instance.pk %}Edit Recipe{% else %}Add New Recipe{% endif %}</h2>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.title.id_for_label }}" class="form-label">Title</label>
+                            {{ form.title.errors }}
+                            <input type="text" name="{{ form.title.name }}" id="{{ form.title.id_for_label }}" class="form-control {% if form.title.errors %}is-invalid{% endif %}" value="{{ form.title.value|default:'' }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                            {{ form.description.errors }}
+                            <textarea name="{{ form.description.name }}" id="{{ form.description.id_for_label }}" class="form-control {% if form.description.errors %}is-invalid{% endif %}" rows="3" required>{{ form.description.value|default:'' }}</textarea>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.cooking_time.id_for_label }}" class="form-label">Cooking Time (minutes)</label>
+                                {{ form.cooking_time.errors }}
+                                <input type="number" name="{{ form.cooking_time.name }}" id="{{ form.cooking_time.id_for_label }}" class="form-control {% if form.cooking_time.errors %}is-invalid{% endif %}" value="{{ form.cooking_time.value|default:'' }}" min="1" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.servings.id_for_label }}" class="form-label">Servings</label>
+                                {{ form.servings.errors }}
+                                <input type="number" name="{{ form.servings.name }}" id="{{ form.servings.id_for_label }}" class="form-control {% if form.servings.errors %}is-invalid{% endif %}" value="{{ form.servings.value|default:'1' }}" min="1" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.ingredients.id_for_label }}" class="form-label">Ingredients</label>
+                            {{ form.ingredients.errors }}
+                            <textarea name="{{ form.ingredients.name }}" id="{{ form.ingredients.id_for_label }}" class="form-control {% if form.ingredients.errors %}is-invalid{% endif %}" rows="5" placeholder="Enter each ingredient on a new line" required>{{ form.ingredients.value|default:'' }}</textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.instructions.id_for_label }}" class="form-label">Instructions</label>
+                            {{ form.instructions.errors }}
+                            <textarea name="{{ form.instructions.name }}" id="{{ form.instructions.id_for_label }}" class="form-control {% if form.instructions.errors %}is-invalid{% endif %}" rows="5" placeholder="Enter each step on a new line" required>{{ form.instructions.value|default:'' }}</textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.image.id_for_label }}" class="form-label">Image</label>
+                            {{ form.image.errors }}
+                            <input type="file" name="{{ form.image.name }}" id="{{ form.image.id_for_label }}" class="form-control {% if form.image.errors %}is-invalid{% endif %}" accept="image/*">
+                            {% if form.instance.image %}
+                            <div class="mt-2">
+                                <img src="{{ form.instance.image.url }}" alt="{{ form.instance.title }}" class="img-thumbnail" style="max-height: 200px;">
+                                <div class="form-check mt-1">
+                                    <input class="form-check-input" type="checkbox" name="image-clear" id="image-clear">
+                                    <label class="form-check-label" for="image-clear">Clear image</label>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Categories</label>
+                            {{ form.categories.errors }}
+                            <div class="row">
+                                {% for category in form.categories %}
+                                <div class="col-md-4 mb-2">
+                                    <div class="form-check">
+                                        {{ category.tag }}
+                                        <label class="form-check-label" for="{{ category.id_for_label }}">
+                                            {{ category.choice_label }}
+                                        </label>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                {% if form.instance.pk %}Update Recipe{% else %}Add Recipe{% endif %}
+                            </button>
+                            <a href="{% if form.instance.pk %}{% url 'recipe-detail' form.instance.pk %}{% else %}{% url 'recipe-list' %}{% endif %}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
